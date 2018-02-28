@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<!-- saved from url=(0041)http://bootstrap-3.ru/examples/jumbotron/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+{% load staticfiles %}
+    {% csrf_token %}
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+  
+
+    <link rel="shortcut icon" href="http://bootstrap-3.ru/assets/ico/favicon.ico">
+
+    <title>Отправка картриджей</title>
+
+    <!-- Bootstrap core CSS     <link href="{% static "css/jumbotron-narrow.css" %}" rel="stylesheet"> -->
+    <link href="{% static "css/bootstrap.min.css" %}"  rel="stylesheet">
+
+    <!-- Custom styles for this template <link href="{% static "css/jumbotron.css" %}" rel="stylesheet"> -->
+    
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body id="id_body">
+
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation" style=".navbar-fixed-bottom, .navbar-fixed-top{position: static;} ">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Отправляшка</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <form class="navbar-form navbar-right" id="id_report" role="form">
+            <div class="form-group">
+              <input type="hidden" placeholder="Email" class="form-control">
+            </div>
+            <div class="form-group">
+              <input type="hidden" placeholder="Password" class="form-control">
+            </div>
+            <label for="id_in"><span style="color:white;">с</span></label>
+            	<input class="form-control" type="text" id="id_in" required="true" placeholder="ддммгггг">
+			<label for="id_out"><span style="color:white;">по</span></label>
+            	<input class="form-control" type="text" id="id_out" required="true" value="">
+            <button type="button" form="id_report" class="btn btn-danger" id="id_run_report">Сформировать отчет</button>
+            <label  class="btn btn-success">Безденежных А.О.</label>
+          </form>
+        </div><!--/.navbar-collapse -->
+      </div>
+    </div>
+    <script>
+    	var data = new Date()
+    	Month = data.getMonth();
+    	
+    	switch (Month)
+			{
+			  case 0: fMonth="01"; break;
+			  case 1: fMonth="02"; break;
+			  case 2: fMonth="03"; break;
+			  case 3: fMonth="04"; break;
+			  case 4: fMonth="05"; break;
+			  case 5: fMonth="06"; break;
+			  case 6: fMonth="07"; break;
+			  case 7: fMonth="08"; break;
+			  case 8: fMonth="09"; break;
+			  case 9: fMonth="10"; break;
+			  case 10: fMonth="11"; break;
+			  case 11: fMonth="12"; break;
+			}
+		id_out.value=data.getDate()+''+fMonth+''+data.getFullYear();
+    	//alert(data.getMonth());
+    </script>
+
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <!--<div class="jumbotron">
+      <div class="container">
+        <h1>Hello, world!</h1>
+        <p>This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
+        <p><a class="btn btn-primary btn-lg" role="button">Learn more »</a></p>
+      </div>
+    </div>-->
+
+    <div class="container" id="id_content">
+      <!-- Example row of columns -->
+      <div class="row">
+        <div class="col-md-3">
+          <h2>Действия</h2><br>
+
+         	
+
+					<form id="if_filter_sector">
+					<div class="thumbnail">
+          			<div class="btn-group-vertical" style="margin-bottom: 15px;">
+						<label for="id_filter">Фильтр</label>
+						<input type="checkbox" id="id_filter" 
+						onclick='$("#id_input_group").html(document.html);location.reload();'>
+							<div class="input-group" id="id_input_group">
+							<!--<br>
+								<label for="id_f_in">с</label><br>
+									<input type="text" id="id_f_in" class="form-control"><br>
+								<label for="id_f_out">по</label><br>
+									<input type="text" id="id_f_out" class="form-control"><br>-->
+							</div>	
+						</div>
+					</div>
+				</form>
+	  
+
+
+
+<form id="id_send_cart">
+			<div class="thumbnail">
+          	<div class="btn-group-vertical" style="margin-bottom: 15px;">
+          	<label for="id_model_cart">Модель картриджа</label><br>
+          		<select class="form-control" name="" id="id_model_cart" required="true">
+          			 {% for model_cart in model_carts %}
+          			<option value="{{model_cart}}">{{model_cart}}</option>
+          			{% endfor%}
+          		</select><br>
+          	<label for="id_amount">Колличество</label><br>
+          		<input class="form-control" type="number" value="1" id="id_amount" min="1" max="20" required="true"><br>
+          	<label for="id_post_offices">Почтовое отделение</label><br>
+          		<select class="form-control" name="" id="id_post_offices" required="true">
+          			{% for post_offices in post_officess %}
+          			<option value="{{post_offices}}">{{post_offices}}</option>
+          			{% endfor%}
+          		</select><br> 
+    		  	<button class="btn btn-success" type="button" form="id_send_cart" id="id_send" name="send">Отправить картридж</button>
+
+			</div>
+			</div>
+</form>
+
+
+		  
+        <!--<div class="thumbnail" id="id_synt_report">
+			<div class="thumbnail">
+        		<label for="id_begin">с</label>
+          		<input placeholder="С" class="form-control" type="date" id="id_begin"><br>
+          	</div>
+			<div class="thumbnail">
+          	<label for="id_out">по</label>
+         
+          	<input placeholder="По" class="form-control" type="date" id="id_out"><br>
+          	</div>
+
+          	          		<button class="btn btn-warning">Сформировать отчет</button>
+        </div>-->
+       
+
+        </div>
+        <div class="col-md-9" id="id_table_content">
+        <table class="table" style="width: 100%;">
+        	<tr>
+        		<td><span><b>№</b></span></td>
+        		<td><span><b>Дата</b></span></td>
+        		<td><span><b>Модель</b></span></td>
+        		<td><span><b>Кол.</b></span></td>
+        		<td><span><b>Отделение</b></span></td>
+        		<td><span><b>Отправитель</b></span></td>
+        		<td><span><b>Статус</b></span></td>
+        	</tr>
+        	{% for dispath in dispaths %}
+        	<tr>
+        		<td><span>{{dispath.id}}</span></td>
+        		<td><span>{{dispath.disp_date|date:"d m Y" }}</span></td>
+        		<td><span>{{dispath.model_c}}</span></td>
+        		<td><span>{{dispath.amount}} шт.</span></td>
+        		<td><span>{{dispath.post_office}}</span></td>
+        		<td><span>Безденежных А.О.</span></td>
+        		<td><span><input type="checkbox" checked="true">	</span></td>
+        	</tr>
+        	{% endfor %}
+        </table>
+       <span style="color:none;font-size:1px;">end_table</span></div>
+
+      </div>
+
+      <hr>
+      <!-- Button trigger modal -->
+
+
+
+      <footer>
+        <p>© Company 2014</p>
+      </footer>
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="{% static "js/jquery.min.js" %}"></script>
+    <script src="{% static "js/bootstrap.min.js" %}"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  
+  <script>
+  	//String user = System.getenv("USERNAME");
+ 
+    //исполняемый код после загрузки документа
+
+	//var result = prompt('Введите имя вашего ПК', 'default');
+
+//$(function(){
+    $("#id_send").click(function(){
+        $.ajax({
+          type:"POST",
+          url:"",
+          data:{
+            'model_c':id_model_cart.value,
+            'amount':id_amount.value,
+            'post_office':id_post_offices.value,
+            //'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val()
+          },
+          success: function(html){$("#id_body").html(html);},   
+          //error: alert('---'),
+          dataType:'html'
+        });
+
+    });
+
+        $("#id_run_report").click(function(){
+        $.ajax({
+          type:"POST",
+          url:"",
+          data:{
+            'date_in':id_in.value,
+            'date_out':id_out.value,
+            //'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val()
+          },
+          success: function(html){$("#id_body").html(html);alert('success');},   
+          //error: alert('---'),
+          dataType:'html'
+        });
+
+    });
+
+        /*function reload(html){
+        	function(html){jquery('#id_body').html(html)}
+        }*/
+
+//});
+
+				
+				///function show_filter(){
+				//document.getElementById('id_filter').checked = true
+		/*$(document).ready(function(){
+			if (id_filter.checked!=true)
+					{id_input_group.innerHTML='';
+					 $("#id_body").html(document.html);}
+			else($("#id_body").html(document.html));
+		});	*/
+
+		/*function filter(){
+			if (id_filter.checked==false)
+					{id_input_group.innerHTML='11';
+					 
+				jQuery('#id_body').load('#id_input_group'); 
+  
+            }
+			else(id_input_group.innerHTML='<br></br><label for="id_f_in">с</label><br></br><input type="text" id="id_f_in" class="form-control"><br></br><label for="id_f_out">по</label><br></br><input type="text" id="id_f_out" class="form-control"><br></br>'
+
+				$("#id_body").html(document.html));
+			
+				jQuery('#id_body').load('#id_input_group');  // В данном случае автообновление равно 15 секундам. Выставляется значение в миллисекундах. 1 секунда = 1000 миллисекундам
+
+		}*/
+						/*{id_input_group.innerHTML='<br></br><label for="id_f_in">с</label><br></br><input type="text" id="id_f_in" class="form-control"><br></br><label for="id_f_out">по</label><br></br><input type="text" id="id_f_out" class="form-control"><br></br>'}
+					else
+						{id_input_group.innerHTML=''};*/
+			//}
+			if (id_filter.checked==false)
+					{id_input_group.innerHTML='';
+				//location.reload();
+					 
+				//jQuery('#id_body').load('#id_input_group'); 
+  
+            		}
+			else
+				{id_input_group.innerHTML='<label for="id_f_in">с</label><input type="text" placeholder="ддммгггг" required="true" id="id_f_in" class="form-control"><br></br><label for="id_f_out">по</label><input type="text" placeholder="ддммгггг" required="true" id="id_f_out" class="form-control"><br></br>';
+				$("#id_body").html(document.html);
+			};
+
+	$("#id_f_out").change(function(){
+        $.ajax({
+          type:"POST",
+          url:"",
+          data:{
+            'f_in':id_f_in.value,
+            'f_out':id_f_out.value,
+            //'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val()
+          },
+          success:searchSuccess, 
+          //success:function(data){
+          //	$('#id_table_content').text(data.id_table_content);
+          //},
+          						  
+          //error: alert('---'),
+          dataType:'html'
+        });
+
+    });
+    function searchSuccess(data, textStatus, jqXHR)
+{
+	var con=jqXHR.responseText;
+	var position_begin=con.indexOf('<table class="table" style="width: 100%;">');
+	var position_end=con.indexOf('<span style="color:none;font-size:1px;">end_table</span></div>');
+	//alert(con);
+  $('#id_table_content').html(con.substring(position_begin, position_end));
+}
+			
+				//jQuery('#id_body').load('#id_input_group');  // В данном случае автообновление равно 15 секундам. Выставляется значение в миллисекундах. 1 секунда = 1000 миллисекундам
+			
+
+</script>
+ 
+</body></html>

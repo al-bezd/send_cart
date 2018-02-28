@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<!-- saved from url=(0041)http://bootstrap-3.ru/examples/jumbotron/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+{% load staticfiles %}
+<script src="//code.jquery.com/jquery-3.1.1.min.js"></script>
+{% load bootstrap3 %}
+
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+    {% csrf_token %}
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+  
+
+    <link rel="shortcut icon" href="http://bootstrap-3.ru/assets/ico/favicon.ico">
+
+    <title>Отправка картриджей</title>
+
+
+  </head>
+
+  <body id="id_body">
+
+    <div class="navbar navbar-inverse" role="navigation" style="">
+    <div hidden="" class="alert alert-success text-center" style="opacity:0.9;width:100%;" id="message_success_id"><strong style="font-size:18px;">Отправка записанна!</strong></div> 
+      <div class="container">
+        <div class="navbar-header">
+
+          <a class="navbar-brand" href="#">Отправка картриджей</a>
+        </div>
+        <div class="navbar-collapse collapse">
+			<ul class="nav navbar-nav navbar-right">
+				<li style="margin-left:10px;"><span class="navbar-brand" style="color:white;"><b>Сформировать отчет за</b></span></li>
+				<li style="margin-left:10px;margin-top: 8px;">
+					<div class="input-group" style="max-width:200px;vertical-align:middle;">
+				      		<input type="text" class="form-control" id="current_period" value="08.2017" size="35">
+					      	<span class="input-group-btn">
+					        	<button type="button" class="btn btn-danger" id="id_run_report">Сформировать</button>
+					      	</span>
+				    	</div>
+				</li>
+				<li style="margin-left:10px;margin-top: 8px;">
+					<label  class="btn btn-success">Безденежных А.О.</label>
+				</li>
+			</ul>
+        
+	        
+        </div><!--/.navbar-collapse -->
+      </div>
+    </div>
+ 
+
+    <div class="container" id="id_content">
+      <!-- Example row of columns -->
+      <div class="row">
+        <div class="col-md-3">
+          <h2>Действия</h2><br>
+
+          
+         
+                
+
+ <div class="panel-group" id="accordion">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      
+        <a data-toggle="collapse" data-parent="#accordion" href="#invoice_add" onclick="InvoiceShow()" id="invoice_id" style="text-decoration:none;">
+          <h4 class="panel-title">Принять накладную</h4>
+        </a>
+      
+    </div>
+    <div id="invoice_add" class="panel-collapse collapse">
+      <div class="panel-body">
+        <input type="text" placeholder="№ Накладной" class="form-control" id="invoice_doc_id"><br>
+
+        <input type="text" placeholder="Модель" class="form-control" id="invoice_model_c_id"><br>
+
+        <input type="text" placeholder="Колличество" class="form-control" id="invoice_count_id"><br>
+
+        <select name="" id="invoice_type_id" class="form-control">
+          {%for i in type_c%}
+            <option value="{{i.type_cartridge}}">{{i.type_cartridge}}</option>
+          {%endfor%}
+        </select><br>
+
+        <input type="text" placeholder="Вид" value="Приход" class="form-control" id="invoice_status_id"><br>
+
+        <button class="btn btn-success form-control" id="btn_add_invoice_id">Создать</button>
+        <script>
+          
+        </script>
+
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" onclick="DispathShow()" style="text-decoration:none;">
+          <h4 class="panel-title">Фильтр</h4>
+        </a>
+      
+    </div>
+    <div id="collapseOne" class="panel-collapse collapse">
+      <div class="panel-body">
+        <label for="id_f_in">с</label>
+            <input type="text" placeholder="ддммгггг" required="true" id="id_f_in" class="form-control" onkeyup="Filter_for_date();"><br>
+              <label for="id_f_out">по</label>
+            <input type="text" placeholder="ддммгггг" required="true" id="id_f_out" class="form-control" onkeyup="Filter_for_date();"><br>
+      </div>
+    </div>
+  </div>
+    <div class="panel panel-default" id="statistic">
+	    <div class="panel-heading">
+	      
+	        <a data-toggle="collapse" data-parent="#accordion" href="#collapseBalance" style="text-decoration:none;">
+	          <h4 class="panel-title">Остатки на складе</h4>
+	        </a>
+	      
+	    </div>
+	    <div id="collapseBalance" class="panel-collapse collapse">
+	      <div class="panel-body" id="panel_body_balance">
+	        <span>Остатки за этот месяц: <span style="background-color: green;" class="badge">{{balance_for_month}}</span></span><br>
+	        <span>Отправок за этот месяц: <span style="background-color: red;" class="badge">{{disp_for_month}}</span></span><br>
+	        <span>Всего на складе: <span>{{balance}}</span></span>
+	        <hr>
+	         <div class="panel-group" id="accordion2">
+				  <div class="panel panel-default">
+				    <div class="panel-heading">
+				      
+				        <a data-toggle="collapse" data-parent="#accordion2" href="#statistic_all_times" style="text-decoration:none;">
+				          <h4 class="panel-title"><span>Остаток по всем моделям(за все время)</span></h4>
+				        </a>
+				      
+				    </div>
+				    <div id="statistic_all_times" class="panel-collapse collapse">
+				      <div class="panel-body">
+
+							        <table class="table">
+							        {% for i in all_models_statistic %}
+							        	<tr>
+							        		<td>{{i.model_c}}</td>
+							        		<td>{{i.count}} шт.</td>
+							        	</tr>
+							        {% endfor %}
+							        </table>
+				      </div>
+				    </div>
+				  </div>
+				    <div class="panel panel-default">
+				    <div class="panel-heading">
+				      
+				        <a data-toggle="collapse" data-parent="#accordion2" href="#statistic_for_month" style="text-decoration:none;">
+				          <h4 class="panel-title"><span>Отправки по всем моделям(за месяц)</span></h4>
+				        </a>
+				      
+				    </div>
+				    <div id="statistic_for_month" class="panel-collapse collapse">
+				      <div class="panel-body">
+
+							        <table class="table">
+							        {% for i in statistics_for_month %}
+							        	<tr>
+							        		<td>{{i.model_c}}</td>
+							        		<td>{{i.month_exp}} шт.</td>
+							        	</tr>
+							        {% endfor %}
+							        </table>
+							        <hr>
+							        <span style="font-size:16px;"><b>Итого:  </b></span><span style="font-size:16px;">{{statistics_for_month_summ}} шт.</span>
+				      </div>
+				    </div>
+				  </div>
+			  </div>
+	        
+	        
+	        
+	        
+
+	    </div>
+	 </div><div id="panel_body_balance_end_tag" hidden=""></div>
+  </div>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseSend" onclick="DispathShow()" style="text-decoration:none;">
+          <h4 class="panel-title">Отправка картриджей</h4>
+        </a>
+      
+    </div>
+    <div id="collapseSend" class="panel-collapse collapse in">
+      <div class="panel-body">
+      
+            <div class="btn-group-vertical" style="margin-bottom: 15px;">
+
+            <label for="id_post_offices">Почтовое отделение</label><br>
+              <select class="form-control" name="" id="id_post_offices" required="true">
+                {% for post_offices in post_officess %}
+                <option value="{{post_offices.index}}">{{post_offices.name}} / {{post_offices.index}}</option>
+                {% endfor%}
+              </select><br> 
+
+            <label for="id_model_cart">Модель картриджа</label><br>
+
+
+              <select class="form-control" name="" id="id_model_cart" required="true">
+                 {% for i in cartridges %}
+                <option value="{{i.model}}">{{i.model}}( <span style="color:red;">{{i.count}}</span> )</option>
+                {% endfor%}
+              </select><br>
+
+
+
+              <br>
+
+            <label for="id_amount">Колличество</label><br>
+              <input class="form-control" type="number" value="1" id="id_amount" min="1" max="20" required="true"><br>
+
+			<label for="id_date_send"> <b>Дата отправки</b>
+                <input type="date" class="form-control" id="id_date_send" list="id_data_list" placeholder="ддммгггг" required="">
+                    <datalist id="id_data_list">
+                        <option id="id_opt_data_list">{{date_now}}</option>
+                    </datalist>
+            </label>
+
+
+            <button class="btn btn-success form-control" type="button" id="id_send" name="send">Отправить картридж</button>
+            
+
+      
+
+      </div>
+      
+      
+
+
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+            <div class="alert alert-success text-center" id="success_dispath_id" style="position:fixed;top:0;left:0;opacity:2;width:100%;display:none;background-color:rgb(92, 184, 92);z-index:99999;"><strong style="font-size:18px;color:white;">Отправка записанна!</strong></div>  
+                                                
+
+        </div>
+        <div class="col-md-9" id="id_table_content">
+          <div id="id_table_content_body"></div>
+            <table class="table" style="width: 100%;" id="dispath_table">
+              <tr>
+                <td><span><b>№</b></span></td>
+                <td><span><b>Дата</b></span></td>
+                <td><span><b>Модель</b></span></td>
+                <td><span><b>Кол.</b></span></td>
+                <td><span><b>Отделение</b></span></td>
+                <td><span><b>Отправитель</b></span></td>
+                <td><span><b>Удалить</b></span></td>
+              </tr>
+              {% for dispath in dispaths %}
+              <tr>
+                <td><span>{{dispath.id}}</span></td>
+                <td><span><b>{{dispath.disp_date|date:"d.m.Y" }}</b></span></td>
+                <td><span>{{dispath.model}}</span></td>
+                <td><span>{{dispath.amount}} шт.</span></td>
+                <td><span>{{dispath.post_office.name}} / {{dispath.post_office.index}}</span></td>
+                <td><span></span></td>
+                <td><span id="delete_dispath_id" class="close text-center" onclick="DeleteDispath('{{dispath.id}}')" title="Удалить">X</span></td>
+              </tr>
+              {% endfor %}
+            </table>
+           <span style="display:none">end_table</span>
+       </div>
+               <div class="col-md-9" id="id_invoice_content" style="display:none;">
+                <table class="table" style="width: 100%;" id="invoice_table">
+                  <tr>
+                    <td><span><b>№</b></span></td>
+                    <td><span><b>Накладная №</b></span></td>
+                    <td><span><b>Модель</b></span></td>
+                    <td><span><b>Кол.</b></span></td>
+                    <td><span><b>Дата</b></span></td>
+                    <td><span><b>Отправитель</b></span></td>
+                    <td><span><b>Удалить</b></span></td>
+                  </tr>
+                  {% for i in invoice %}
+                  <tr>
+                    <td><span>{{i.id}}</span></td>
+                    <td><span>{{i.number_doc}}</span></td>
+                    <td><span>{{i.model}}</span></td>
+                    <td><span>{{i.count}} шт.</span></td>
+                    <td><span><b>{{i.date_create_add|date:"d.m.Y" }}</b></span></td>
+                    <td><span>Безденежных А.О.</span></td>
+                    <td><span id="delete_invoice_id" class="close" onclick="DeleteInvoice('{{i.id}}')" title="Удалить">X</span></td>
+                  </tr>
+                  {% endfor %}
+                </table>
+               <span style="display:none">end_table2</span>
+             </div>
+          
+        
+      </div>
+
+      <hr>
+      <!-- Button trigger modal -->
+
+
+
+      <footer>
+
+      <!-- Button trigger modal -->
+
+
+
+
+    
+      </footer>
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+
+  
+  <script>
+
+    function InvoiceShow(){
+      $('#id_invoice_content').css('display','block');
+      $('#dispath_table').css('display','none');
+    }
+       function DispathShow(){
+      $('#id_invoice_content').css('display','none');
+      $('#dispath_table').css('display','block');
+    }
+           
+    
+
+    $('#invoice_add_id').click(function(){
+     
+    });
+    $("#id_send").click(function(){
+        $.ajax({
+          type:"POST",
+          url:"",
+          data:{
+            'model':id_model_cart.value,
+            'amount':id_amount.value,
+            'post_office':id_post_offices.value,
+            'date_disp':id_date_send.value,
+        
+            'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val()
+          },
+          //success: function(html){$("#id_body").html(html);},  
+          success:Success, 
+          //error: alert('---'),
+          error:function(html){$("#id_body").html(html);alert(html.responseText);}, 
+          dataType:'html'
+        });
+        //id_resp_stat.innerHTML='';
+        //id_resp_stat.style.display='none';
+
+    });
+    function func() {
+  id_resp_stat.style.transition='5s';
+  id_resp_stat.style.opacity=0;
+}
+    function func1() {
+  id_resp_stat.style.display='none';
+}
+
+
+    function ErrorSend(){
+    		id_resp_stat.style.display='block';
+    		id_resp_stat.innerHTML='<strong>Ошибка!</strong>';
+    		id_resp_stat.style.margin='5px';
+    		id_resp_stat.className ='alert alert-danger';
+
+    		//id_resp_stat.style.transition='1s';
+    		id_resp_stat.style.transition='top 2s ease-out 2s';
+    		id_resp_stat.style.opacity=1;
+    		setTimeout(func, 3000);
+    		setTimeout(func1, 7000);
+    		
+
+    }
+function SuccessHide(){
+  $('#success_dispath_id').hide();
+}
+        function Success(data, textStatus, jqXHR)
+{
+  var con=jqXHR.responseText;
+  var response=jqXHR.responseText;
+  //var position_begin=con.indexOf('<table class="table" style="width: 100%;" id="dispath_table">');
+  var position_begin=con.indexOf('<table class="table" style="width: 100%;" id="dispath_table">');
+  var position_end=con.indexOf('</table><span style="display:none">end_table</span>');
+  //var position_end=con.indexOf('<span style="color:none;font-size:1px;">end_table</span></div>');
+  //alert(con);
+  id_table_content.innerHTML=con.substring(position_begin, position_end);
+  //var balance_for_month=
+  //var disp_for_month=
+  //var balance=
+  panel_body_balance.innerHTML=response.substring(response.indexOf('<div class="panel-body" id="panel_body_balance">'),response.indexOf('</div><div id="panel_body_balance_end_tag" hidden=""></div>'));
+  //$('#panel_body_balance').html(response.substring(response.indexOf('<div class="panel-body" id="panel_body_balance">'),response.indexOf('</div><div id="panel_body_balance_end_tag" hidden=""></div>')));
+  $('#message_success_id').text('<strong style="font-size:18px;">Отправка записанна!</strong>');
+  $('#success_dispath_id').show();
+  setTimeout(SuccessHide, 7000);
+  /*id_resp_stat.style.display='block';
+  id_resp_stat.innerHTML='<strong><p>Успешная операция!</p></strong>';
+  id_resp_stat.style.margin='5px';
+  id_resp_stat.className ='alert alert-success';
+
+  id_resp_stat.style.transition='1s';
+  id_resp_stat.style.opacity=1;
+  setTimeout(func, 3000);
+  setTimeout(func1, 7000);*/
+  
+}
+
+        $("#id_run_report").click(function(){
+        	var date_for_report=current_period.value;
+        	n=String(date_for_report).replace('.','');
+        	d=n.split('');
+        	month=d[0]+d[1];
+        	year=d[2]+d[3]+d[4]+d[5];
+        $.ajax({
+          type:"POST",
+          url:"",
+          data:{
+            'month':month,
+            'year':year,
+            'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val()
+          },
+          success: DownloadReport,   
+          //error:alert('ERROR'), 
+          dataType:'html'
+        });
+
+    });
+        function DownloadReport(){
+        	//document.location.href="{{report_file}}";
+        	document.location.replace("{{report_file}}");
+        }
+
+  function Filter_for_date(){
+        $.ajax({
+          type:"POST",
+          url:"",
+          data:{
+            'f_in':id_f_in.value,
+            'f_out':id_f_out.value,
+            'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val()
+          },
+          success:searchSuccess, 
+          //success:function(data){
+          //  $('#id_table_content').text(data.id_table_content);
+          //},
+                        
+          //error: alert('---'),
+          dataType:'html'
+        });
+
+    }
+
+
+
+    function searchSuccess(data, textStatus, jqXHR)
+{
+  var con=jqXHR.responseText;
+  var response=jqXHR.responseText;
+  var position_begin=con.indexOf('<table class="table" style="width: 100%;" id="dispath_table">');
+  var position_end=con.indexOf('</table><span style="display:none">end_table</span>');
+  //var position_end=con.indexOf('<span style="color:none;font-size:1px;">end_table</span></div>');
+  //alert(con);
+  id_table_content.innerHTML=con.substring(position_begin, position_end);
+  //var balance_for_month=
+  //var disp_for_month=
+  //var balance=
+  panel_body_balance.innerHTML=response.substring(response.indexOf('<div class="panel-body" id="panel_body_balance">'),response.indexOf('</div><div id="panel_body_balance_end_tag" hidden=""></div>'));
+  //$('#panel_body_balance').html(response.substring(response.indexOf('<div class="panel-body" id="panel_body_balance">'),response.indexOf('</div><div id="panel_body_balance_end_tag" hidden=""></div>')));
+}
+  function RefreshAfterDispDelete(data, textStatus, jqXHR){
+    var con=jqXHR.responseText;
+    var response=jqXHR.responseText;
+  var position_begin=con.indexOf('<table class="table" style="width: 100%;" id="dispath_table">');
+  var position_end=con.indexOf('</table><span style="display:none">end_table</span>');
+  //var position_end=con.indexOf('<span style="color:none;font-size:1px;">end_table</span></div>');
+  //alert(con);
+  id_table_content.innerHTML=con.substring(position_begin, position_end);
+    panel_body_balance.innerHTML=response.substring(response.indexOf('<div class="panel-body" id="panel_body_balance">'),response.indexOf('</div><div id="panel_body_balance_end_tag" hidden=""></div>'));
+    alert('Отправка удалена');
+}
+
+
+function DeleteDispath(id){
+          $.ajax({
+          type:"POST",
+          url:"",
+          data:{
+            'delete_id':id,
+            'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val()
+          },
+          success:RefreshAfterDispDelete, 
+          dataType:'html'
+        });
+}
+
+$('#btn_add_invoice_id').click(function(){
+            $.ajax({
+              type:"POST",
+              url:"",
+              data:{
+                'model_c_invoice':$('#invoice_model_c_id').val(),
+                'count_invoice':$('#invoice_count_id').val(),
+                'invoice_invoice':$('#invoice_doc_id').val(),
+                'type_c_invoice':$('#invoice_type_id').val(),
+                'status_invoice':$('#invoice_status_id').val(),
+                'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val()
+              },
+              //success: function(html){$("#id_body").html(html);},  
+              success:SuccessAddInvoice, 
+              //error: alert('---'),
+              error:function(html){$("#id_body").html(html);alert(html.responseText);}, 
+              dataType:'html'
+            });
+              });
+          function DeleteInvoice(id){
+          $.ajax({
+          type:"POST",
+          url:"",
+          data:{
+            'delete_invoice_id':id,
+            'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val()
+          },
+          success:RefreshAfterInvoiceDelete, 
+          dataType:'html'
+        });
+      }
+        function RefreshAfterInvoiceDelete(data, textStatus, jqXHR){
+          var con=jqXHR.responseText;
+          $('#id_invoice_content').css('display','block');
+
+        var position_begin=con.indexOf('<table class="table" style="width: 100%;" id="invoice_table">');
+        var position_end=con.indexOf('<span style="display:none">end_table2</span>');
+          id_invoice_content.innerHTML=con.substring(position_begin, position_end);
+          
+          alert('Накладная удалена');
+
+
+      }
+       function SuccessAddInvoice(data, textStatus, jqXHR){
+        var con=jqXHR.responseText;
+        $('#id_invoice_content').css('display','block');
+
+        var position_begin=con.indexOf('<table class="table" style="width: 100%;" id="invoice_table">');
+        var position_end=con.indexOf('<span style="display:none">end_table2</span>');
+        id_invoice_content.innerHTML=con.substring(position_begin, position_end);
+
+          /*var position_begin=con.indexOf('<table class="table" style="width: 100%;" id="dispath_table">');
+          var position_end=con.indexOf('</table><span style="display:none">end_table</span>');
+          id_table_content.innerHTML=con.substring(position_begin, position_end);*/
+
+        $('#success_dispath_id').show();
+          setTimeout(SuccessHide, 7000);
+      }
+
+</script>
+ 
+</body></html>
