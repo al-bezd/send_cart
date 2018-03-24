@@ -1,0 +1,6 @@
+check_send/*.pyc
+check_send/migrations/*.pyc
+context_processor/*.pyc
+custom_page/*.pyc
+post_app2/*.pyc
+*.pyc
