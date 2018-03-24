@@ -1,0 +1,153 @@
+{% extends 'admin/base_site.html' %}
+
+{% block title %}Настройки{% endblock %}
+
+{% comment %}{% block extrastyle %}{{ block.super }}
+    <link rel="stylesheet" href="{{ STATIC_URL }}path/css/style.css">
+{% endblock %}{% endcomment %}
+
+{% comment %}{% block breadcrumbs %}
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+        &rsaquo;
+        <a href="{% url 'admin:spec_my_model_changelist' %}">Пункт хлебных крошек</a>
+        &rsaquo; {{custom_page.title}}
+    </div>
+{% endblock %}{% endcomment %}
+
+{% block content %}
+<style>
+	label{
+		display: block;
+padding: 4px 10px 0 0;
+float: left;
+width: 200px;
+word-wrap: break-word;
+line-height: 1;
+	}
+</style>
+
+
+<form action="" method="POST">{% csrf_token %}
+    <div class="fieldsets">
+        <ul>
+            {{ form.as_ul }}
+        </ul>
+
+    </div>
+    <div class="submit-row">
+        <input value="Сохранить" class="default" name="save" type="submit" style="float: left;">
+    </div>
+   <!--
+    <div class="fieldsets">
+
+        <fieldset class="module aligned ">
+            <h1>Настройки</h1>
+            <br>
+            <h4>Основные</h4>
+            <div class="form-row">
+                <div>
+                    <label class="required" for="name_id">Название организации</label>
+            		<input type="text" name="name" id="name_id" class="vTextField" required="" value="{{name}}"> 
+                </div>
+        	</div>
+        	<div class="form-row">
+                <div>
+                    <label class="required" for="logo_id">Логотип</label>
+            		<input type="file" name="logo" id="logo_id" class="vTextField"  value="{{logo}}">  
+                </div>
+        	</div>            
+
+			            <br><hr>
+            <h4>Конакты</h4>
+        	<div class="form-row">
+                <div>
+                    <label class="required" for="tel_id">Телефон</label>
+            		<input type="text" name="tel" id="tel_id" class="vTextField" required="" value="{{tel}}"> 
+                </div>
+        	</div>            
+        	<div class="form-row">
+                <div>
+                    <label class="required" for="email_id">Емайл</label>
+            		<input type="text" name="email" id="email_id" class="vTextField" required="" value="{{email}}">
+                </div>
+        	</div>  
+        	        <br><hr>
+            <h4>Расположение</h4>  
+        	<div class="form-row">
+                <div>
+                    <label class="required" for="nation_id">Страна</label>
+            		<input type="text" name="nation" id="nation_id" class="vTextField" required="" value="{{nation}}">   
+                </div>
+        	</div>            
+        	<div class="form-row">
+                <div>
+                    <label class="required" for="city_id">Город</label>
+            		<input type="text" name="city" id="city_id" class="vTextField" required="" value="{{city}}">  
+                </div>
+        	</div>            
+        	<div class="form-row">
+                <div>
+                    <label class="required" for="street_id">Улица</label>
+            		<input type="text" name="street" id="street_id" class="vTextField" required="" value="{{street}}">
+                </div>
+        	</div>            
+        	<div class="form-row">
+                <div>
+                    <label class="required" for="home_id">Дом</label>
+            		<input type="text" name="home" id="house_id" class="vTextField" required="" value="{{home}}">   
+                </div>
+        	</div>  
+        	        <br><hr>
+			<h4>Настройки россылки</h4>  
+        	<div class="form-row">
+                <div>
+                    <label class="required" for="smtp_id">SMTP</label>
+            		<input type="text" name="smtp" id="smtp_id" class="vTextField" required="" value="{{smtp}}">
+                </div>
+        	</div>            
+        	<div class="form-row">
+                <div>
+                    <label class="required" for="port_id">Порт</label>
+            		<input type="text" name="port" id="port_id" class="vTextField" required="" value="{{port}}">    
+                </div>
+        	</div>            
+        	<div class="form-row">
+                <div>
+                    <label class="required" for="email_from_id">Почтовый адрес (От кого)</label>
+            		<input type="text" name="email_from" id="email_from_id" class="vTextField" required="" value="{{email_from}}">  
+                </div>
+        	</div>            
+        	<div class="form-row">
+                <div>
+                    <label class="required" for="password_id" title="пароль от ящика с которого будут рассылаться письма (тот что выше)">Пароль</label>
+            		<input type="text" name="password" id="password_id" class="vTextField" required="" value="{{password}}">   
+                </div>
+        	</div>            
+        	<div class="form-row">
+                <div>
+                    <label class="required" for="email_to_id">Почтовый адрес (Кому)</label>
+            		<input type="text" name="email_to" id="email_to_id" class="vTextField" required="" value="{{email_to}}">  
+                </div>
+        	</div>
+        	<br><hr>
+            <h4><span style="color:red;">Я</span>ндекс.Карты</h4>
+        	<div class="form-row">
+                <div>
+                    <label class="required" for="yamap_x_id">Координата X</label>
+            		<input type="text" name="yamap_x" id="yamap_x_id" class="vTextField" required="" value="{{yamap_x}}"> 
+                </div>
+        	</div>
+        	<div class="form-row">
+                <div>
+                    <label class="required" for="yamap_y_id">Координата Y</label>
+            		<input type="text" name="yamap_y" id="yamap_y_id" class="vTextField" required="" value="{{yamap_y}}">   
+                </div>
+        	</div>    
+        </fieldset>
+        <div class="submit-row">
+			<input value="Сохранить" class="default" name="save" type="submit" style="float: left;">
+		</div>
+    </div>-->
+    </form>
+{% endblock %}
