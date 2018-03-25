@@ -1,184 +1,82 @@
+/*Функция дорисовывания нуля для методов getDate() и getMonth()*/
+function BolsheDesyati(val){
+  if( val < 10 ){
+    return String(0)+String(val)
+  }else{
+    return String(val)
+  }
+}
+/*Функция отрисовывания таблицы на основе JSON объекта*/
+function RenderDispTable(dispatch){
+  l=[`<tr>
+          <td><span><b>№</b></span></td>
+          <td><span><b>Дата</b></span></td>
+          <td><span><b>Модель</b></span></td>
+          <td><span><b>Кол.</b></span></td>
+          <td><span><b>Отделение</b></span></td>
+ 
+          <td><span><b>Удалить</b></span></td>
+      </tr>`];
+for (i = 0; i < dispatch.length; i++) {
+  let id=dispatch[i].pk;
+  date=new Date(dispatch[i].fields.disp_date);
+  let disp_date=BolsheDesyati(date.getDate())+'.'+BolsheDesyati(date.getMonth()+1)+'.'+date.getFullYear();
+  let model=dispatch[i].fields.model;
+  let amount=dispatch[i].fields.amount;
+  let post_office_name=dispatch[i].fields.post_office.toUpperCase();
 
-    function InvoiceShow(){
-      $('#id_invoice_content').css('display','block');
-      $('#dispath_table').css('display','none');
-    }
-       function DispathShow(){
-      $('#id_invoice_content').css('display','none');
-      $('#dispath_table').css('display','block');
-    }
-
-
-
-    $('#invoice_add_id').click(function(){
-
-    });
-    $("#id_send").click(function(){
-        $.ajax({
-          type:"POST",
-          url:"",
-          data:{
-            'model':id_model_cart.value,
-            'amount':id_amount.value,
-            'post_office':id_post_offices.value,
-            'date_disp':id_date_send.value,
-
-            'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val()
-          },
-          //success: function(html){$("#id_body").html(html);},
-          success:Success,
-          //error: alert('---'),
+  let s=`<tr><td style="width:15%;">${id}</td>
+                <td><span><b>${disp_date}</b></span></td>
+                <td><span>${model}</span></td>
+                <td><span>${amount} шт.</span></td>
+                <td><span>${post_office_name}</span></td>
+               
+                <td><span id="delete_dispath_id" class="close text-center" onclick="DeleteDispath('${id}')" title="Удалить">X</span></td>
+              </tr>`;
+              l.push(s);
+  }
+  dispath_table.innerHTML=l.join(" ");
+}
+/*Полсе того как написали функцию сразу ее запускаем что бы отрисовалась таблица с отправками*/
+RenderDispTable(dispatch);
+/*Создание отправки и отправка данных на сервер при помощи технологии AJAX, 
+если все успешно то передаем ответ в функцию RenderDispTable(), 
+которая отрисует актуальную таблицу по полученым данным, а если произошла ошибка то через функцию alert()
+выведется ответ с сервера в котором будет содержание ошибки*/
+$("#id_send").click(function(){
+    $.ajax({
+        type:"POST",
+        url:"/create_dispatch",
+        data:$('#create_disp_form_id').serializeArray(),
+          success:function(data, textStatus, jqXHR){
+            RenderDispTable(JSON.parse(jqXHR.responseText));
+            Success();},
           error:function(html){$("#id_body").html(html);alert(html.responseText);},
-          dataType:'html'
+        dataType:'html'
         });
-        //id_resp_stat.innerHTML='';
-        //id_resp_stat.style.display='none';
-
     });
-    function func() {
-  id_resp_stat.style.transition='5s';
-  id_resp_stat.style.opacity=0;
-}
-    function func1() {
-  id_resp_stat.style.display='none';
-}
-
-
-    function ErrorSend(){
-    		id_resp_stat.style.display='block';
-    		id_resp_stat.innerHTML='<strong>Ошибка!</strong>';
-    		id_resp_stat.style.margin='5px';
-    		id_resp_stat.className ='alert alert-danger';
-
-    		//id_resp_stat.style.transition='1s';
-    		id_resp_stat.style.transition='top 2s ease-out 2s';
-    		id_resp_stat.style.opacity=1;
-    		setTimeout(func, 3000);
-    		setTimeout(func1, 7000);
-
-
-    }
+/*функции анимации успешной отправки*/
 function SuccessHide(){
-  $('#success_dispath_id').hide();
+  $('#success_dispath_id').animate({'opacity':'hide'});
 }
-        function Success(data, textStatus, jqXHR)
-{
-  var con=jqXHR.responseText;
-  var response=jqXHR.responseText;
-  //var position_begin=con.indexOf('<table class="table" style="width: 100%;" id="dispath_table">');
-  var position_begin=con.indexOf('<table class="table" style="width: 100%;" id="dispath_table">');
-  var position_end=con.indexOf('</table><span style="display:none">end_table</span>');
-  //var position_end=con.indexOf('<span style="color:none;font-size:1px;">end_table</span></div>');
-  //alert(con);
-  id_table_content.innerHTML=con.substring(position_begin, position_end);
-  //var balance_for_month=
-  //var disp_for_month=
-  //var balance=
-  panel_body_balance.innerHTML=response.substring(response.indexOf('<div class="panel-body" id="panel_body_balance">'),response.indexOf('</div><div id="panel_body_balance_end_tag" hidden=""></div>'));
-  //$('#panel_body_balance').html(response.substring(response.indexOf('<div class="panel-body" id="panel_body_balance">'),response.indexOf('</div><div id="panel_body_balance_end_tag" hidden=""></div>')));
+function Success(){
   $('#message_success_id').text('<strong style="font-size:18px;">Отправка записанна!</strong>');
   $('#success_dispath_id').show();
-  setTimeout(SuccessHide, 7000);
-  /*id_resp_stat.style.display='block';
-  id_resp_stat.innerHTML='<strong><p>Успешная операция!</p></strong>';
-  id_resp_stat.style.margin='5px';
-  id_resp_stat.className ='alert alert-success';
-
-  id_resp_stat.style.transition='1s';
-  id_resp_stat.style.opacity=1;
-  setTimeout(func, 3000);
-  setTimeout(func1, 7000);*/
-
+  setTimeout(SuccessHide, 3000);
 }
-
-        $("#id_run_report").click(function(){
-        	var date_for_report=current_period.value;
-        	n=String(date_for_report).replace('.','');
-        	d=n.split('');
-        	month=d[0]+d[1];
-        	year=d[2]+d[3]+d[4]+d[5];
-        $.ajax({
-          type:"POST",
-          url:"",
-          data:{
-            'month':month,
-            'year':year,
-            'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val()
-          },
-          success: DownloadReport,
-          //error:alert('ERROR'),
-          dataType:'html'
-        });
-
-    });
-        function DownloadReport(){
-        	//document.location.href="{{report_file}}";
-        	document.location.replace("{{report_file}}");
-        }
-
-  function Filter_for_date(){
-        $.ajax({
-          type:"POST",
-          url:"",
-          data:{
-            'f_in':id_f_in.value,
-            'f_out':id_f_out.value,
-            'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val()
-          },
-          success:searchSuccess,
-          //success:function(data){
-          //  $('#id_table_content').text(data.id_table_content);
-          //},
-
-          //error: alert('---'),
-          dataType:'html'
-        });
-
-    }
-
-
-
-    function searchSuccess(data, textStatus, jqXHR)
-{
-  var con=jqXHR.responseText;
-  var response=jqXHR.responseText;
-  var position_begin=con.indexOf('<table class="table" style="width: 100%;" id="dispath_table">');
-  var position_end=con.indexOf('</table><span style="display:none">end_table</span>');
-  //var position_end=con.indexOf('<span style="color:none;font-size:1px;">end_table</span></div>');
-  //alert(con);
-  id_table_content.innerHTML=con.substring(position_begin, position_end);
-  //var balance_for_month=
-  //var disp_for_month=
-  //var balance=
-  panel_body_balance.innerHTML=response.substring(response.indexOf('<div class="panel-body" id="panel_body_balance">'),response.indexOf('</div><div id="panel_body_balance_end_tag" hidden=""></div>'));
-  //$('#panel_body_balance').html(response.substring(response.indexOf('<div class="panel-body" id="panel_body_balance">'),response.indexOf('</div><div id="panel_body_balance_end_tag" hidden=""></div>')));
-}
-  function RefreshAfterDispDelete(data, textStatus, jqXHR){
-    var con=jqXHR.responseText;
-    var response=jqXHR.responseText;
-  var position_begin=con.indexOf('<table class="table" style="width: 100%;" id="dispath_table">');
-  var position_end=con.indexOf('</table><span style="display:none">end_table</span>');
-  //var position_end=con.indexOf('<span style="color:none;font-size:1px;">end_table</span></div>');
-  //alert(con);
-  id_table_content.innerHTML=con.substring(position_begin, position_end);
-    panel_body_balance.innerHTML=response.substring(response.indexOf('<div class="panel-body" id="panel_body_balance">'),response.indexOf('</div><div id="panel_body_balance_end_tag" hidden=""></div>'));
-    alert('Отправка удалена');
-}
-
-
+/*************************************/
+/*функция удаления отправки*/
 function DeleteDispath(id){
           $.ajax({
-          type:"POST",
-          url:"",
-          data:{
-            'delete_id':id,
-            'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val()
-          },
-          success:RefreshAfterDispDelete,
+          type:"GET",
+          url:"/delete_dispatch",
+          data:{'delete_id':id,},
+          success:function(data, textStatus, jqXHR){RenderDispTable(JSON.parse(jqXHR.responseText));alert('Отправка удалена');},
           dataType:'html'
         });
 }
-
+/*Все что находится выше это рабочий код правка от 25.03.2018*/
+/*****************************************************/
 $('#btn_add_invoice_id').click(function(){
             $.ajax({
               type:"POST",

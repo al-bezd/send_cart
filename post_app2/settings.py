@@ -4,7 +4,7 @@ import os
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-from custom_page.models import get_settings_custom_file
+from custom_page.forms import get_settings_custom_file
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -22,7 +22,7 @@ ALLOWED_HOSTS = []
 
 PROJECT_NAME=u'Отправка картриджей'
 # Application definition
-
+APPEND_SLASH=False
 INSTALLED_APPS = [
     'custom_page.apps.CustomPageConfig',
     'custom_page.custom_admin',

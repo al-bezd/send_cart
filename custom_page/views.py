@@ -5,8 +5,10 @@ import json
 import io
 from django.contrib import messages
 from django.shortcuts import render
-from custom_page.models import CustomPageForm
+from custom_page.forms import CustomPageForm
 from custom_page.settings import PATH_TO_SETTINGS_FILE
+
+
 
 def show_admin_custom_page(request,template='custom_page/admin_custom_page.html',context={}):
     try:

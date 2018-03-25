@@ -2,7 +2,7 @@
 from django.conf.urls import url
 from django.contrib.auth.decorators import user_passes_test
 
-from custom_page.models import CustomPage
+from custom_page.forms import CustomPage
 from custom_page.views import show_admin_custom_page
 
 urlpatterns = [
