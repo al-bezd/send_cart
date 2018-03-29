@@ -8,6 +8,9 @@ from django.core.mail import get_connection, EmailMultiAlternatives
 from django.db import models
 
 # Create your models here.
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+
 
 class BaseProperty(models.Model):
     class Meta:
@@ -62,7 +65,10 @@ class Dispatch(BaseProperty):
 
     def __unicode__(self):
         return u'%s' % (self.id)
-
+    def get_office(self):
+        return u'%s' % (self.post_office.name)
+    def get_index(self):
+        return u'%s' % (self.post_office.index)
     '''
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
@@ -113,27 +119,21 @@ def delete_disp(request):
     if request.GET.get('delete_id'):
         del_disp=Dispatch.objects.get(id=request.GET.get('delete_id'))
         del_disp.delete()
-        return True
-    return False
+    return True
 
-def create_disp(request,context={}):
-    if request.POST.get('model'):
+
+def create_disp(request):
+    if request.GET.get('model'):
         #proverka na otsutstvie dati, esli dati netu to prisvaivaetsya segodnya
         try:
-            disp_date = datetime.datetime.strptime(request.POST['date_disp'], '%Y-%m-%d')
+            disp_date = datetime.datetime.strptime(request.GET['date_disp'], '%Y-%m-%d')
         except:
             disp_date = datetime.datetime.strptime(django.utils.timezone.now, '%Y-%m-%d')
          #sozdanie otpravki i zapis' v bazu
         send = Dispatch(
             disp_date=disp_date,
-            post_office=PostOffices.objects.get(index=request.POST['post_office']),
-            model=Cartriges.objects.get(model=request.POST['model']),
-            amount=request.POST['amount'],)
+            post_office=PostOffices.objects.get(index=request.GET['post_office']),
+            model=Cartriges.objects.get(model=request.GET['model']),
+            amount=request.GET['amount'],)
         send.save()
-
-        #c=Cartriges.objects.get(model=request.POST['model'])
-        #c.count -=int(request.POST['amount'])
-        #c.save()
-
-        return True
-    return False
+    return True

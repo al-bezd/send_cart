@@ -35,8 +35,13 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'check_send.apps.CheckSendConfig',
     'bootstrap3',
+    'rest_framework',
+    'api'
 ]
-
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
+    'PAGINATE_BY': 10
+}
 SITE_ID = 1
 
 MIDDLEWARE = [

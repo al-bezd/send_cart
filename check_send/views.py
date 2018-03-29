@@ -9,6 +9,7 @@ from django.core import mail, serializers
 from django.core.mail import message, EmailMessage
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
+from django.urls import reverse
 from django.utils.encoding import python_2_unicode_compatible
 
 from check_send.forms import DatePickerForm, DatePickerSendForm, DispFilter
@@ -90,19 +91,11 @@ def send_report(request):
 
 def create_dispatch(request,context={}):
     if create_disp(request):
-        qs = Dispatch.objects.all().order_by("-disp_date").order_by("-id")[0:100]
-        context['dispaths2'] = serializers.serialize('json', qs)
-        qs_json = serializers.serialize('json', qs)
-        return HttpResponse(qs_json)
-    return HttpResponse([], content_type='application/json')
+        return HttpResponseRedirect(reverse('api:dispatch-list',kwargs={'format':'json'}))
 
 def delete_dispatch(request,context={}):
     if delete_disp(request):
-        qs = Dispatch.objects.all().order_by("-disp_date").order_by("-id")[0:100]
-        context['dispaths2'] = serializers.serialize('json', qs)
-        qs_json = serializers.serialize('json', qs)
-        return HttpResponse(qs_json)
-    return HttpResponse([], content_type='application/json')
+        return HttpResponseRedirect(reverse('api:dispatch-list', kwargs={'format': 'json'}))
 
 
 

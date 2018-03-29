@@ -8,6 +8,7 @@ function BolsheDesyati(val){
 }
 /*Функция отрисовывания таблицы на основе JSON объекта*/
 function RenderDispTable(dispatch){
+  dispatch=JSON.parse(dispatch);
   l=[`<tr>
           <td><span><b>№</b></span></td>
           <td><span><b>Дата</b></span></td>
@@ -18,18 +19,20 @@ function RenderDispTable(dispatch){
           <td><span><b>Удалить</b></span></td>
       </tr>`];
 for (i = 0; i < dispatch.length; i++) {
-  let id=dispatch[i].pk;
-  date=new Date(dispatch[i].fields.disp_date);
+  //console.log(dispatch);
+  let id=dispatch[i].id;
+  date=new Date(dispatch[i].disp_date);
   let disp_date=BolsheDesyati(date.getDate())+'.'+BolsheDesyati(date.getMonth()+1)+'.'+date.getFullYear();
-  let model=dispatch[i].fields.model;
-  let amount=dispatch[i].fields.amount;
-  let post_office_name=dispatch[i].fields.post_office.toUpperCase();
+  let model=dispatch[i].model;
+  let amount=dispatch[i].amount;
+  let post_office=dispatch[i].post_office.toUpperCase();
+  let post_index=dispatch[i].post_index;
 
   let s=`<tr><td style="width:15%;">${id}</td>
                 <td><span><b>${disp_date}</b></span></td>
                 <td><span>${model}</span></td>
                 <td><span>${amount} шт.</span></td>
-                <td><span>${post_office_name}</span></td>
+                <td><span>${post_office} / ${post_index}</span></td>
                
                 <td><span id="delete_dispath_id" class="close text-center" onclick="DeleteDispath('${id}')" title="Удалить">X</span></td>
               </tr>`;
@@ -38,18 +41,27 @@ for (i = 0; i < dispatch.length; i++) {
   dispath_table.innerHTML=l.join(" ");
 }
 /*Полсе того как написали функцию сразу ее запускаем что бы отрисовалась таблица с отправками*/
-RenderDispTable(dispatch);
+$('body').ready(function(){
+  $.ajax({
+    type:"GET",
+    url:"/api/dispatchs/?format=json",
+      success:function(data, textStatus, jqXHR){RenderDispTable(jqXHR.responseText);},
+      error:function(html){$("#id_body").html(html);alert(html.responseText);},
+        dataType:'html'
+  });
+});
+////////RenderDispTable(dispatch);
 /*Создание отправки и отправка данных на сервер при помощи технологии AJAX, 
 если все успешно то передаем ответ в функцию RenderDispTable(), 
 которая отрисует актуальную таблицу по полученым данным, а если произошла ошибка то через функцию alert()
 выведется ответ с сервера в котором будет содержание ошибки*/
 $("#id_send").click(function(){
     $.ajax({
-        type:"POST",
+        type:"GET",
         url:"/create_dispatch",
         data:$('#create_disp_form_id').serializeArray(),
           success:function(data, textStatus, jqXHR){
-            RenderDispTable(JSON.parse(jqXHR.responseText));
+            RenderDispTable(jqXHR.responseText);
             Success();},
           error:function(html){$("#id_body").html(html);alert(html.responseText);},
         dataType:'html'
@@ -71,7 +83,7 @@ function DeleteDispath(id){
           type:"GET",
           url:"/delete_dispatch",
           data:{'delete_id':id,},
-          success:function(data, textStatus, jqXHR){RenderDispTable(JSON.parse(jqXHR.responseText));alert('Отправка удалена');},
+          success:function(data, textStatus, jqXHR){RenderDispTable(jqXHR.responseText);alert('Отправка удалена');},
           dataType:'html'
         });
 }
